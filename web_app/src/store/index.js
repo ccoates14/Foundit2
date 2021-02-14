@@ -1,12 +1,17 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import axios from 'axios';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    baseAPIURL: '',
+    baseAPIURL :'http://localhost:3000/api/',
     showSignInForm: false,
+    userdata:{
+      accessToken: null,
+      username: null
+    },
     cards: [
       {
         title: 'test card',
@@ -31,23 +36,60 @@ export default new Vuex.Store({
   },
   mutations: {
     setShowSignInForm(state, val){
-      console.log(123);
       state.showSignInForm = val;
+    },
+    setUserData(state, data){
+      if (data){
+        state.userdata = data;
+      }else{
+        state.userdata = {
+          accessToken: null,
+          username: null
+        }
+      }
     }
   },
   actions: {
     initCards({state}){
-      console.log(state.cards);
+      
       for (let i = 0; i < 100; i++){
         state.cards.push(state.cards[0]);
       }
     },
-    signUp(){
-
+    signUp({state, dispatch}, userData){
+      axios.post(state.baseAPIURL + 'auth/signUp', userData).then(() =>{
+        dispatch('signIn', userData);
+      }).catch(err => {
+        console.log(err);
+        alert("Sorry we had trouble creating your account!");
+      });
     },
-    checkUsernameTaken({state}, username){
-      state
-      username
+    async signIn({state, commit}, userData){
+      const username = new String(userData.username);
+      axios.post(state.baseAPIURL + 'auth/signin', userData).then(({data}) => {
+
+        commit('setUserData', {
+          username: username,
+          accessToken: data.accessToken
+        });
+      }).catch(err => {
+        console.log(err);
+      }).finally(() =>{
+        if (state.userdata.username != null){
+          commit('setShowSignInForm', false);
+        }
+      })
+    },
+    async checkUsernameTaken({state}, username){
+      return new Promise((resolve, reject) => {
+        axios.get(state.baseAPIURL + "users/exists/" + username).then(r => {
+          resolve(r);
+        }).catch(err => {
+          console.log(err);
+          reject(err);
+        });
+      });
+     
     }
   },
   modules: {},

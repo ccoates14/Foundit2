@@ -123,6 +123,7 @@ export default {
     
     },
     signIn() {
+      console.log('sss');
       this.$store.dispatch('signIn', {
         username: this.username,
         password: this.password
