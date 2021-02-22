@@ -8,10 +8,7 @@ export default new Vuex.Store({
   state: {
     baseAPIURL :'http://localhost:3000/api/',
     showSignInForm: false,
-    userdata:{
-      accessToken: null,
-      username: null
-    },
+    username: null,
     cards: [
       {
         title: 'test card',
@@ -34,20 +31,29 @@ export default new Vuex.Store({
       },
     ],
   },
+  getters:{
+    token(){
+      let t = window.localStorage.getItem('token');
+      return t && t.length > 0 && t != "null" ? t : null;
+    },
+    username(state){
+      return state.username;
+    }
+  },
   mutations: {
     setShowSignInForm(state, val){
       state.showSignInForm = val;
     },
-    setUserData(state, data){
-      if (data){
-        state.userdata = data;
-      }else{
-        state.userdata = {
-          accessToken: null,
-          username: null
-        }
+    setUsername(state, username){
+      if (username){
+        window.localStorage.setItem('username', username);
+        state.username = username;
       }
-    }
+    },
+    setUserAccessToken(_, token){
+      if (token) window.localStorage.setItem('token', token);
+    },
+  
   },
   actions: {
     initCards({state}){
@@ -59,37 +65,53 @@ export default new Vuex.Store({
     signUp({state, dispatch}, userData){
       axios.post(state.baseAPIURL + 'auth/signUp', userData).then(() =>{
         dispatch('signIn', userData);
-      }).catch(err => {
-        console.log(err);
+      }).catch(error => {
+        console.error(error);
         alert("Sorry we had trouble creating your account!");
       });
     },
-    async signIn({state, commit}, userData){
+    signOut({state}){
+      localStorage.clear();
+      state.username = null;
+    },
+    async signIn({getters, state, commit}, userData){
       const username = new String(userData.username);
-      axios.post(state.baseAPIURL + 'auth/signin', userData).then(({data}) => {
-
-        commit('setUserData', {
-          username: username,
-          accessToken: data.accessToken
-        });
-      }).catch(err => {
-        console.log(err);
-      }).finally(() =>{
-        if (state.userdata.username != null){
-          commit('setShowSignInForm', false);
-        }
-      })
+      return new Promise((resolve, reject) => {
+        axios.post(state.baseAPIURL + 'auth/signin', userData).then(({data}) => {
+          const accessToken = data.accessToken;
+          commit('setUsername', username);
+          commit("setUserAccessToken", accessToken);
+          resolve();
+        }).catch(error => {
+          console.error(error);
+          reject();
+        }).finally(() =>{
+          if (getters.username != null){
+            commit('setShowSignInForm', false);
+          }else{
+            console.error("username was null");
+          }
+        })
+      });
+     
+    },
+    async tryExpireToken(){
+      //this will log the user out if they are expired
     },
     async checkUsernameTaken({state}, username){
       return new Promise((resolve, reject) => {
         axios.get(state.baseAPIURL + "users/exists/" + username).then(r => {
           resolve(r);
-        }).catch(err => {
-          console.log(err);
-          reject(err);
+        }).catch(error => {
+          console.error(error);
+          reject(error);
         });
       });
      
+    },
+    async init({dispatch, state}){
+      dispatch('initCards');
+      state.username = localStorage.getItem('username');
     }
   },
   modules: {},

@@ -26,7 +26,7 @@
                   ></v-text-field>
 
                   <v-card-actions>
-                    <v-btn primary small @click="signIn">Login</v-btn>
+                    <v-btn primary small @click="signIn">Sign in</v-btn>
                     <v-btn primary small @click="step++">Sign Up</v-btn>
                     <v-btn primary small @click="$store.commit('setShowSignInForm', false)">Close</v-btn>
                   </v-card-actions>
@@ -117,21 +117,22 @@ export default {
           this.isValidForm = false;
         }
       }catch (err){
-        console.log(err);
+        console.error(err);
         this.label = "Username";
       }
     
     },
     signIn() {
-      console.log('sss');
       this.$store.dispatch('signIn', {
         username: this.username,
         password: this.password
+      }).catch(() => {
+        this.password = '';
+        this.isValidForm = false;
       });
     },
     async checkUserNameTaken() {
       const r = await this.$store.dispatch('checkUsernameTaken', this.username);
-  
       return r.data;
     },
     submitSignUp() {
