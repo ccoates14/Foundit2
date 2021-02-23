@@ -9,6 +9,7 @@ export default new Vuex.Store({
     baseAPIURL :'http://localhost:3000/api/',
     showSignInForm: false,
     username: null,
+    showPostWindow: false,
     cards: [
       {
         title: 'test card',
@@ -44,6 +45,9 @@ export default new Vuex.Store({
     setShowSignInForm(state, val){
       state.showSignInForm = val;
     },
+    setShowPostWindow(state, val){
+      state.showPostWindow = val;
+    }, 
     setUsername(state, username){
       if (username){
         window.localStorage.setItem('username', username);
