@@ -10,7 +10,7 @@ export class AuthController {
   constructor(private readonly userService: UsersService, private readonly jwtService: JwtService) { }
   
   @Post('/signup')
-  async signUp(@Body(ValidationPipe) authCredentials: AuthDTO): Promise<void>{
+  async signUp(@Body(ValidationPipe) authCredentials: AuthDTO): Promise<Boolean>{
     return this.userService.signUp(authCredentials);
   }
 

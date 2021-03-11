@@ -1,8 +1,11 @@
-import { closeInMongodConnection, rootMongooseTestModule } from './../../test/util/TestMongoConfig';
+import { AuthDTO } from './../../auth/auth.dto';
+import { closeInMongodConnection, rootMongooseTestModule } from '../../../test/util/TestMongoConfig';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from './users.service';
-import { User, UserSchema } from './users.schema';
+import { UsersService } from '../users.service';
+import { User, UserSchema } from '../users.schema';
+
+
 describe('UsersService', () => {
   let service: UsersService;
 
@@ -24,6 +27,17 @@ describe('UsersService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  it('Should be able to sign up', async () => {
+    let authDto : AuthDTO = {username: 'chan123', password: 'ZedZed1234!$'};
+    let success = await service.signUp(authDto);
+    expect(success).toEqual(true);
+
+    let user = await service.getUser(authDto.username);
+
+    expect(user.username).toEqual(authDto.username);
+    
   });
 
   afterAll(async () => {

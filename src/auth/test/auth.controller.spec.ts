@@ -1,10 +1,10 @@
-import { UsersModule } from './../users/users.module';
+import { UsersModule } from '../../users/users.module';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthController } from './auth.controller';
-import { closeInMongodConnection, rootMongooseTestModule } from './../../test/util/TestMongoConfig';
+import { AuthController } from '../auth.controller';
+import { closeInMongodConnection, rootMongooseTestModule } from '../../../test/util/TestMongoConfig';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from './../users/users.schema';
-import { JwtStrategy } from './jwt.strategy';
+import { User, UserSchema } from '../../users/users.schema';
+import { JwtStrategy } from '../jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 

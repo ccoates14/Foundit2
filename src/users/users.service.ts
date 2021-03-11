@@ -13,7 +13,7 @@ export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) { }
 
   public async userExists(username: string): Promise<boolean>{
-    const user = await this.userModel.findOne({ username }).exec();
+    const user = await this.getUser(username);
 
     if (user) {
       return true;
@@ -42,7 +42,7 @@ export class UsersService {
   }
 
 
-  public async signUp(authCredentialsDto: AuthDTO): Promise<void>{
+  public async signUp(authCredentialsDto: AuthDTO): Promise<Boolean>{
     if (await this.userExists(authCredentialsDto.username)) throw new ConflictException('username already exists!');
 
     const salt = await bcrypt.genSalt();
@@ -55,6 +55,7 @@ export class UsersService {
     const user = await new this.userModel(userData);
     try {
       user.save();
+      return true;
     } catch (err) {
       console.log(err);
       throw new InternalServerErrorException();
@@ -62,7 +63,7 @@ export class UsersService {
   }
 
   public async getUser(username: string): Promise<User>{
-    return await this.userModel.findOne({ username }).exec();
+    return this.userModel.findOne({ username }).exec();
   }
 
   private async hashPassword(password: string, salt: string): Promise<string>{

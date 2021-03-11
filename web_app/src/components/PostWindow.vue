@@ -5,7 +5,7 @@
         <v-container class="text-xs-center">
           <v-card flat>
             <v-card-title primary-title>
-              <h4>Sign In</h4>
+              <h4>Post Product</h4>
             </v-card-title>
             <v-divider></v-divider>
             <v-form>
