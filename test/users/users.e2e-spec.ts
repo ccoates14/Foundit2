@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { AppModule } from '../src/app.module';
+import * as request from 'supertest';
+import { AppModule } from '../../src/app.module';
+
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -15,8 +17,12 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('started correctly', () => {
-    expect(app).toBeTruthy();
+  it('/api/auth/signup', () => {
+    return request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({username:'ccccc1234', password:'ZedZed1234!$'})
+      .expect(201)
+      ;
   });
 
   afterAll(()=>{

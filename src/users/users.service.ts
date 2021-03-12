@@ -13,9 +13,9 @@ export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) { }
 
   public async userExists(username: string): Promise<boolean>{
-    const user = await this.getUser(username);
+    const user: User = await this.getUser(username);
 
-    if (user) {
+    if (user && user.username == username) {
       return true;
     } 
 
@@ -63,7 +63,18 @@ export class UsersService {
   }
 
   public async getUser(username: string): Promise<User>{
-    return this.userModel.findOne({ username }).exec();
+    return this.userModel.findOne({username}).exec();
+    //return new User();
+  }
+
+  public async getAllUsers(limit: number=-1): Promise<Array<User>>{
+    let query = this.userModel.find({});
+
+    if (limit){
+      return query.limit(limit).exec();
+    }
+
+    return query.exec();
   }
 
   private async hashPassword(password: string, salt: string): Promise<string>{

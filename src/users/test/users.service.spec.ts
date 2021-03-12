@@ -33,10 +33,12 @@ describe('UsersService', () => {
     let authDto : AuthDTO = {username: 'chan123', password: 'ZedZed1234!$'};
     let success = await service.signUp(authDto);
     expect(success).toEqual(true);
-
     let user = await service.getUser(authDto.username);
-
-    expect(user.username).toEqual(authDto.username);
+    let users = await service.getAllUsers();
+    expect(user).toBeTruthy();
+    expect(users).toBeTruthy();
+    expect(users.length).toBeGreaterThan(0);
+    //expect(user.username).toEqual(authDto.username);
     
   });
 
